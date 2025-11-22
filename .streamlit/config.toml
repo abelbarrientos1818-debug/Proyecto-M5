@@ -1,0 +1,16 @@
+# Archivo: .streamlit/config.toml (Tema Brainiac)
+
+[theme]
+# Verde Brillante/Lima (El acento principal de Brainiac)
+primaryColor = "#00FF00" 
+
+# Negro o Gris muy oscuro (Fondo de la nave/espacio)
+backgroundColor = "#111111"
+
+# Morado Oscuro/Violeta (Color del casco/acento secundario)
+secondaryBackgroundColor = "#5D3FD3"
+
+# Texto en Blanco para alto contraste sobre el fondo oscuro
+textColor = "#FFFFFF" 
+
+font = "sans serif"
