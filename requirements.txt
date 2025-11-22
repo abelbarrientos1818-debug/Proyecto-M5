@@ -1,8 +1,8 @@
 streamlit
 openai
 pandas
-numpy==1.26.4
-scikit-learn==1.4.1 # Asegúrate de que scikit-learn esté presente, aunque no la uses directamente, es crucial para xgboost
+numpy
+scikit-learn==1.7.0
 xgboost==1.7.6
 python-dotenv
 pydantic
