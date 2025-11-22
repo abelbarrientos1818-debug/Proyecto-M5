@@ -1,3 +1,10 @@
+# --- INICIO DEL FIX DE RUTA ---
+import sys
+import os
+
+
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+# --- FIN DEL FIX DE RUTA ---
 import os
 import json
 import streamlit as st
