@@ -74,7 +74,7 @@ Usa ESTRICTAMENTE este formato visual:
 * **Creación de Tiro (SCA90):** [SCA90]
 * **Acciones Defensivas (Def90):** [Def_P90]
 * **Eficiencia Ofensiva:** [Eficiencia]
-*(Aquí añade una breve frase interpretando si estos números son altos o bajos para su posición).*
+*(Aquí añade una breve frase interpretando si estos números son altos o bajos para su posición, de manera muy resumida y si un dato es cero da por hecho que no es el fuerte del jugador).*
 ---
 ### 3. 💰 VEREDICTO SALARIAL (Neto Anual)
 > 🎯 **Rango Recomendado:** [recommended_salary_range]
@@ -82,7 +82,7 @@ Usa ESTRICTAMENTE este formato visual:
 > 📉 *Base Neta Estimada: [neto_central_real]*
 ---
 ### 4. 💡 Conclusión Estratégica
-[Aquí escribe tu análisis experto. Conecta los puntos:
+[Aquí escribe tu análisis experto(pero de manera muy resumida por favor). Conecta los puntos:
 - Si el rango es alto, menciona que el club tiene poder financiero.
 - Si los impuestos son altos, explica que eso afecta el neto.
 - Da una recomendación final: ¿Debería aceptar? ¿Pedir más?]
