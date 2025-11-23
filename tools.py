@@ -85,6 +85,9 @@ def predecir_salario(jugador_row, target_club=None, target_league=None):
     masa_usada = jugador_row.get('Masa_Salarial_X', 0)
     tax_rate = jugador_row.get('Tax_Rate', 0.45)
     cov_factor = jugador_row.get('COV_Factor', 1.0)
+    print(f"[DEBUG PRED] masa: {masa_usada}")
+    print(f"[DEBUG PRED] tax_rate: {tax_rate}")
+    print(f"[DEBUG PRED] cov_factor: {cov_factor}")
 
     # A. Modificación Club
     if target_club:
@@ -137,20 +140,30 @@ def predecir_salario(jugador_row, target_club=None, target_league=None):
         else:
             return {"error": f"No tengo datos fiscales para '{target_league}'."}
 
+    # -----------------------------------------------------------------
+    # 🚨🚨 ZONA DE DEPURACIÓN CRÍTICA 🚨🚨
+    # -----------------------------------------------------------------
+    
     # Predicción
     try:
         dmatrix = xgb.DMatrix(X_input, feature_names=feature_columns)
         log_pred = model.predict(dmatrix)[0]
+        # 🚨 DEBUG PREDICCIÓN CRUDA 🚨
+        print(f"[DEBUG PRED] Valor Logarítmico Crudo: {log_pred}")
         salario_bruto = np.exp(log_pred)
+        print(f"[DEBUG PRED] Salario bruto: {salario_bruto}")
     except Exception as e:
         return {"error": f"Error matemático: {e}"}
     
     # Banda Neto
     rmse_log = 0.0569; z = 1.645
     neto_central = salario_bruto * (1 - tax_rate) * cov_factor
+    print(f"[DEBUG PRED] neto central: {neto_central}")
     neto_min = np.exp(log_pred - (rmse_log * z)) * (1 - tax_rate) * cov_factor
+    print(f"[DEBUG PRED] neto min: {neto_min}")
     neto_max = np.exp(log_pred + (rmse_log * z)) * (1 - tax_rate) * cov_factor
-    
+    print(f"[DEBUG PRED] neto max: {neto_max}")
+
     if neto_min < 0: neto_min = neto_central * 0.85
     
     return {
@@ -194,14 +207,24 @@ def analyze_player_tool(player_name: str, client_openai=None, target_club: str =
     
     res = predecir_salario(player_row, target_club, target_league)
     if "error" in res: return res
+    # 1. Definir el factor de escala (asumimos que el modelo predice en millones)
+    SCALE_FACTOR = 1_000_000
     
+    # 2. Multiplicar los valores predichos por el factor de escala
+    #    para convertirlos de unidad (ej. millones) a valor real (euros).
+    bruto_real = res['bruto_predicho'] * SCALE_FACTOR
+    neto_min_real = res['neto_min'] * SCALE_FACTOR
+    neto_max_real = res['neto_max'] * SCALE_FACTOR
+    
+    # 3. Formatear data_text usando los valores REALES (bruto_real, neto_min_real, etc.)
     data_text = f"""
     JUGADOR: {player_row['Player']}
     ESCENARIO: {res['contexto']}
     INPUTS: Masa €{res['masa_salarial']:,.0f} | Tax {res['tax_rate']*100:.1f}% | COV {res['cov_factor']:.2f}
-    RESULTADOS: Bruto €{res['bruto_predicho']:,.0f} | Neto €{res['neto_min']:,.0f} - €{res['neto_max']:,.0f}
+    RESULTADOS: Bruto €{bruto_real:,.0f} | Neto €{neto_min_real:,.0f} - €{neto_max_real:,.0f}
     """
-    
+    print("\n[DEBUG IA] Datos Inyectados a la IA (data_text):\n", data_text)
+
     try:
         response = client_openai.beta.chat.completions.parse(
             model="gpt-5-mini",
@@ -224,6 +247,7 @@ def analyze_player_tool(player_name: str, client_openai=None, target_club: str =
         final_json['masa_salarial_real'] = f"€{res['masa_salarial']:,.0f}"
         final_json['tax_rate_real'] = f"{res['tax_rate']*100:.1f}"
         final_json['cov_factor_real'] = f"{res['cov_factor']:.2f}"
+
         
         return final_json
     except Exception as e:
