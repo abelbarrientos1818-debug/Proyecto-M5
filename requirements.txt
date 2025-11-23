@@ -3,6 +3,6 @@ openai
 pandas
 numpy==1.26.4
 scikit-learn==1.4.1 # Asegúrate de que scikit-learn esté presente, aunque no la uses directamente, es crucial para xgboost
-xgboost==1.7.6
+xgboost==2.0.3      # Una versión un poco más estable y compatible que la última
 python-dotenv
 pydantic
